@@ -1,0 +1,40 @@
+<div class="cards-group">
+  <div *ngFor="let cycle of cycles" class="card">
+    <img src="https://cdn.pixabay.com/photo/2013/07/13/13/43/racing-bicycle-161449_640.png" class="card-banner" alt="" />
+    <div class="card-body">
+      <p class="card-text">
+        <span class="title">Brand:</span> {{ cycle.brand }}
+      </p>
+      <p class="card-text">
+        <span class="title">Color:</span>
+        <span class="shade" [style.background-color]="cycle.color"></span>
+      </p>
+      <p class="card-text">
+        <span class="title">Stock left:</span> {{ cycle.quantity - cycle.numBorrowed }}
+      </p>
+
+      <p class="card-text">
+        <span class="title">Price:</span> {{ cycle.price }}
+      </p>
+
+      <div class="quantity-dropdown">
+        <label for="quantity">Quantity:</label>
+        <select name="quantity" [(ngModel)]="cycle.selectedQuantity" #qty="ngModel">
+          <option *ngFor="let i of quantityOptions" [value]="i">{{ i }}</option>
+        </select>
+      </div>
+
+      <div class="btn-group">
+        <button (click)="addToCart(cycle.id, cycle.selectedQuantity)" class="btn cart" title="Add to cart">
+          + <fa-icon [icon]="faCartShopping"></fa-icon>
+        </button>
+      </div>
+
+      <input type="number" name="quantity" [(ngModel)]="cycle.selectedQuantity" [value]="cycle.quantity"
+        *ngIf="authService.isUserAdmin()" />
+      <button *ngIf="authService.isUserAdmin()" (click)="restock(cycle.id, cycle.selectedQuantity)">
+        Restock
+      </button>
+    </div>
+  </div>
+</div>

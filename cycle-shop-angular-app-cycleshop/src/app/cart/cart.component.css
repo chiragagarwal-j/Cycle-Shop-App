@@ -1,0 +1,88 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.shade {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  border-radius: 50%;
+  border: 1px solid #dee0e1;
+  padding: 0.125rem;
+}
+
+th {
+  background-color: #f2f2f2;
+  text-align: left;
+  padding: 8px;
+  border: 1px solid #dee0e1;
+}
+
+td {
+  padding: 8px;
+  border: 1px solid #dee0e1;
+}
+
+tr:hover {
+  background-color: #f5f5f5;
+}
+
+.cart-item-image {
+  max-width: 100px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.quantity-dropdown select {
+  width: 100%;
+  padding: 5px;
+  font-size: 1rem;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-family: Rubik, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease-in-out;
+  height: 30px;
+  width: 30px;
+}
+
+button.update {
+  color: #5e3db3;
+  border-color: #5e3db3;
+}
+
+button.remove {
+  color: #f44336;
+  border-color: #f44336;
+}
+
+.total-price {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 10px;
+  text-align: right;
+  color: #09090a;
+}
+
+.checkout-button {
+  background-color: #007bff;
+  color: #ffffff;
+  padding: 10px 40px;
+  border: none;
+  border-radius: 1px;
+  cursor: pointer;
+}
+
+.checkout-button:hover {
+  background-color: #0056b3;
+}

@@ -1,0 +1,90 @@
+.cards-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: all 0.3s ease-in-out;
+  border: 1px solid #dee0e1;
+}
+
+.card-banner {
+  width: 100%;
+  object-fit: cover;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.25rem;
+  border-top: 1px solid #dee0e1;
+  padding: 1rem;
+  position: relative;
+}
+
+.card-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #282829;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shade {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  border-radius: 50%;
+  border: 1px solid #dee0e1;
+  padding: 0.125rem;
+}
+
+.btn-group {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn {
+  --size: 24px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-family: Rubik, sans-serif;
+  height: var(--size);
+  width: var(--size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease-in-out;
+  border: 1px solid #dee0e1;
+}
+
+.btn.borrow {
+    color: #5e3db3;
+    border-color: #5e3db3;
+}
+.btn.return {
+    color: #f44336;
+    border-color: #f44336;
+}
+
+.btn.cart {
+  --size: 30px;
+  border: none;
+  color: #5e3db3;
+}

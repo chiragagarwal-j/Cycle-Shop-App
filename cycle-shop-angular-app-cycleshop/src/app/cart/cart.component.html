@@ -1,0 +1,39 @@
+<main>
+  <h2>Your Cart</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Brand</th>
+        <th>Color</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Total Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of filteredData">
+        <td>
+          <img src="https://cdn.pixabay.com/photo/2013/07/13/13/43/racing-bicycle-161449_640.png" class="cart-item-image" alt="" />
+        </td>
+        <td>{{ item.brand }}</td>
+        <td>
+          <span class="shade" [style.background-color]="item.color"></span>
+        </td>
+        <td>{{ item.price }}</td>
+        <td>
+          <div class="quantity-dropdown">
+            <select name="quantity" [(ngModel)]="item.quantity" (change)="updateCartItemQuantity(item.cycleId, item.quantity)">
+              <option *ngFor="let i of quantityOptions" [value]="i">{{ i }}</option>
+            </select>            
+          </div>
+        </td>
+        <td>{{ item.price * item.quantity }}<button (click)="removeFromCart(item.cycleId)">🗑️</button></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <div class="total-price">Total Price: {{ calculateTotalPrice() }}</div>
+  <button class="checkout-button" (click)="goToCheckout()">Checkout</button>
+</main>

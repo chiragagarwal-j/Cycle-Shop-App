@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: sans-serif;
+        background-color: #f2f2f2;
+      }
+
+      main {
+        min-height: 100vh;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 90%;
+        gap: 0.5rem;
+        padding-block: 1rem;
+      }
+      input::placeholder,
+      textarea::placeholder {
+        font-family: sans-serif;
+        text-transform: uppercase;
+        font-size: 12px;
+        font-weight: 500;
+        opacity: 50%;
+      }
+
+      #cycle-form {
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        border-radius: 0.25rem;
+        border: 2px solid #ccc;
+        height: min-content;
+        gap: 1rem;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .cycle-input {
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 0.25rem;
+        background-color: #f1f1f1;
+        transition: all 0.3s ease;
+      }
+
+      .cycle-input:focus {
+        outline: none;
+        border-color: #1877f2;
+      }
+
+      .add-button {
+        background-color: #1877f2;
+        padding: 0.5rem 0.75rem;
+        border: none;
+        outline: none;
+        border-radius: 0.25rem;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: capitalize;
+        font-weight: 700;
+      }
+      #details {
+        border-collapse: collapse;
+        width: 420px;
+      }
+
+      #details th,
+      #details td {
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: left;
+        font-size: 18px;
+      }
+      #details th {
+        background-color: #1877f2;
+        color: white;
+        cursor: pointer;
+      }
+      .borrow,
+      .return {
+        cursor: pointer;
+        font-size: 14px;
+        border-radius: 4px;
+        border: none;
+        width: 100px;
+        padding-block: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        text-align: center;
+        color: white;
+      }
+      .borrow {
+        background-color: #4caf50;
+      }
+
+      .return {
+        background-color: #f44336;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Cyclezzz</h1>
+      <table id="details">
+        <tr>
+          <th>id</th>
+          <th>brand</th>
+          <th>color</th>
+          <th>quantity</th>
+          <th>borrow</th>
+          <th>return</th>
+        </tr>
+      </table>
+    </main>
+    <script>
+      fetch("http://localhost:8080/api/cycles/list")
+        .then((response) => response.json())
+        .then((data) => createCyclesTable(data));
+
+      const createCyclesTable = (cycles) => {
+        let html =
+          `
+        <tr>
+        <th>id</th>
+        <th>brand</th>
+        <th>color</th>
+        <th>quantity</th>
+        <th>borrow</th>
+        <th>return</th>
+      </tr>
+        ` +
+          cycles
+            .map(
+              (cycle) => `
+            <tr id="cycle_${cycle.id}">
+                <td>${cycle.id}</td>
+                <td>${cycle.brand}</td>
+                <td>${cycle.color}</td>
+                <td>${cycle.quantity}</td>
+                <td><button class="borrow" onclick="handleBorrow(${cycle.id})">Borrow</button></td>
+                <td><button class="return" onclick="handleReturn(${cycle.id})">Return</button></td>
+            </tr>
+        `
+            )
+            .join("");
+        document.querySelector("#details").innerHTML = html;
+      };
+
+      const handleBorrow = (id) => {
+        fetch(`http://localhost:8080/api/cycles/${id}/borrow`, {
+          method: "PUT",
+        })
+          .then((response) => response.json())
+          .then((cycle) => UpdateCycleUi(cycle));
+      };
+
+      const handleReturn = (id) => {
+        fetch(`http://localhost:8080/api/cycles/${id}/return`, {
+          method: "PUT",
+        })
+          .then((response) => response.json())
+          .then((cycle) => UpdateCycleUi(cycle));
+      };
+
+      const UpdateCycleUi = (cycle) => {
+        const cycleHtml = document.querySelector(`#cycle_${cycle.id}`);
+        cycleHtml.innerHTML = `
+          <td>${cycle.id}</td>
+          <td>${cycle.brand}</td>
+          <td>${cycle.color}</td>
+          <td>${cycle.quantity}</td>
+          <td><button class="borrow" onclick="handleBorrow(${cycle.id})">Borrow</button></td>
+          <td><button class="return" onclick="handleReturn(${cycle.id})">Return</button></td>
+          `;
+      };
+    </script>
+  </body>
+</html>
