@@ -150,6 +150,7 @@ public class CyclesController {
     public ResponseEntity<ResponseDto> confirmedOrder() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByName(authentication.getName()).orElse(null);
+        ResponseDto responseDto = new ResponseDto();
 
         if (user != null) {
             List<Cart> cartItems = cartRepository.findByUserID(user.getId());
@@ -177,9 +178,7 @@ public class CyclesController {
                     }
                 }
             }
-
             if (hasInsufficientQuantity) {
-                ResponseDto responseDto = new ResponseDto();
                 responseDto.setResponseMessage("Insufficient quantity for some items in the cart.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto);
             } else {
@@ -188,33 +187,33 @@ public class CyclesController {
                 order.setTotalPrice(totalPrice);
                 orderRepository.save(order);
 
-                ResponseDto responseDto = new ResponseDto();
                 responseDto.setResponseMessage("Order confirmed successfully.");
                 return ResponseEntity.status(HttpStatus.OK).body(responseDto);
             }
         } else {
-            ResponseDto responseDto = new ResponseDto();
             responseDto.setResponseMessage("User not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDto);
         }
     }
 
+    @PostMapping("/updateCartItemQuantity")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
     public ResponseEntity<ResponseDto> updateCartItemQuantity(@RequestBody CartUpdateRequest request) {
         long cycleId = request.getCycleId();
         int newQuantity = request.getNewQuantity();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByName(authentication.getName()).orElse(null);
         Optional<Cart> cartItemOptional = cartRepository.findByUserIDAndCycleIdAndOrdered(user.getId(), cycleId, false);
+        ResponseDto responseDto = new ResponseDto();
 
         if (cartItemOptional.isPresent()) {
             Cart cartItem = cartItemOptional.get();
             cartItem.setQuantity(newQuantity);
             cartRepository.save(cartItem);
-            ResponseDto responseDto = new ResponseDto();
             responseDto.setResponseMessage("Cart item quantity updated");
             return ResponseEntity.status(HttpStatus.OK).body(responseDto);
         } else {
-            ResponseDto responseDto = new ResponseDto();
             responseDto.setResponseMessage("Cart item not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDto);
         }
@@ -228,6 +227,7 @@ public class CyclesController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByName(authentication.getName()).orElse(null);
+                ResponseDto responseDto = new ResponseDto();
 
         if (user != null) {
             Optional<Cart> cartItemOptional = cartRepository.findByUserIDAndCycleIdAndOrdered(user.getId(), cycleId,
@@ -235,16 +235,13 @@ public class CyclesController {
 
             if (cartItemOptional.isPresent()) {
                 cartRepository.delete(cartItemOptional.get());
-                ResponseDto responseDto = new ResponseDto();
                 responseDto.setResponseMessage("Item removed from the cart");
                 return ResponseEntity.status(HttpStatus.OK).body(responseDto);
             } else {
-                ResponseDto responseDto = new ResponseDto();
                 responseDto.setResponseMessage("Cart item not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDto);
             }
         } else {
-            ResponseDto responseDto = new ResponseDto();
             responseDto.setResponseMessage("User not authenticated");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDto);
         }

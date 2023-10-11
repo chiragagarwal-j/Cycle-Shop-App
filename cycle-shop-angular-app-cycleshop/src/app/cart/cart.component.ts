@@ -48,13 +48,17 @@ export class CartComponent implements OnInit {
   removeFromCart(cycleId: number) {
     this.cyclesService.removeFromCart(cycleId)
       .subscribe(response => {
+        console.log(response);
         this.getCartItems();
       });
   }
 
   updateCartItemQuantity(cycleId: number, newQuantity: number) {
     this.cyclesService.updateCartItemQuantity(cycleId, newQuantity).subscribe(
-      (response) => { }
+      (response) => { 
+        console.log(response);
+        
+      }
     );
   }
 

@@ -36,11 +36,11 @@ export class CyclesService {
 
   updateCartItemQuantity(cycleId: number, newQuantity: number) {
     const request = { cycleId, newQuantity };
-    return this.http.post(`${this.baseUrl}/updateCartItemQuantity`, request);
+    return this.http.post<string>(`${this.baseUrl}/updateCartItemQuantity`, request);
   }
   
   removeFromCart(cycleId: number) {
-    return this.http.post(`${this.baseUrl}/removeFromCart`,cycleId);
+    return this.http.post<string>(`${this.baseUrl}/removeFromCart`,cycleId);
   }
   
   confirmOrder(): Observable<any> {
