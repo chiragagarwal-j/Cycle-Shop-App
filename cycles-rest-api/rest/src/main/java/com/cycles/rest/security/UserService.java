@@ -34,7 +34,6 @@ public class UserService {
 
     public User create(User user) {
         user.setPassword("{bcrypt}" + passwordEncoder.encode(user.getPassword()));
-        // user.setPassword("{noop}" + user.getPassword());
         return userRepository.save(user);
     }
 

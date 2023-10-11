@@ -41,9 +41,6 @@ public class SecurityConfig {
     RSAPrivateKey priv;
 
     @Autowired
-    private CorsConfig corsConfig;
-
-    @Autowired
     private CustomUserDetailsService userDetailsService;
 
     @Autowired
@@ -60,15 +57,22 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfig))
-                .authorizeHttpRequests((requests) -> requests
+                .cors(cors -> cors.configurationSource(
+                        request -> {
+                            var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
+                            corsConfiguration.setAllowedOrigins(java.util.List.of("*"));
+                            corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE"));
+                            corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
+                            return corsConfiguration;
+                        }))
+                .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/api/auth/signup", "/api/auth/token", "/api/cycles/list")
                         .permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(
                         oauth2ResourceServer -> oauth2ResourceServer.jwt(jwt -> jwt.decoder(jwtDecoder())))
-                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling((exceptions) -> exceptions
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                         .accessDeniedHandler(new BearerTokenAccessDeniedHandler()));
         return http.build();

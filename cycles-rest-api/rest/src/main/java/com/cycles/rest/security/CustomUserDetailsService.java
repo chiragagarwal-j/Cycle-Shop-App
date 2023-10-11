@@ -28,23 +28,16 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("No user found with username " + username);
         }
         var myUserEntity = myUserEntityOpt.get();
-        // boolean enabled = true;
-        // boolean accountNonExpired = true;
-        // boolean credentialsNonExpired = true;
-        // boolean accountNonLocked = true;
-
-        var springSecurityUserEntity = User.withUsername(myUserEntity.getName())
+        return User.withUsername(myUserEntity.getName())
                 .password(
                         myUserEntity.getPassword())
                 .roles(myUserEntity.getRole())
                 .build();
-        return springSecurityUserEntity;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        return encoder;
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
 }

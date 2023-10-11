@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.cycles.rest.dto.AddToCartRequest;
 import com.cycles.rest.dto.CartUpdateRequest;
+import com.cycles.rest.dto.ResponseDto;
 import com.cycles.rest.entity.Cart;
 import com.cycles.rest.entity.Cycle;
 import com.cycles.rest.entity.Order;
@@ -87,7 +88,7 @@ public class CyclesController {
     @PostMapping("/addToCart")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<?> addToCart(@RequestBody AddToCartRequest request) {
+    public ResponseEntity<ResponseDto> addToCart(@RequestBody AddToCartRequest request) {
         long id = request.getId();
         int quantity = request.getQuantity();
 
@@ -118,12 +119,19 @@ public class CyclesController {
 
                     cartRepository.save(cartItem);
                 }
-                return ResponseEntity.status(HttpStatus.OK).body(null);
+
+                ResponseDto responseDto = new ResponseDto();
+                responseDto.setResponseMessage("Item added to the cart.");
+                return ResponseEntity.status(HttpStatus.OK).body(responseDto);
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cycle not found");
+                ResponseDto responseDto = new ResponseDto();
+                responseDto.setResponseMessage("Cycle not found");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+            ResponseDto responseDto = new ResponseDto();
+            responseDto.setResponseMessage("User not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDto);
         }
     }
 
@@ -139,13 +147,14 @@ public class CyclesController {
     }
 
     @PostMapping("/confirmedOrder")
-    public ResponseEntity<?> confirmedOrder() {
+    public ResponseEntity<ResponseDto> confirmedOrder() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByName(authentication.getName()).orElse(null);
 
         if (user != null) {
             List<Cart> cartItems = cartRepository.findByUserID(user.getId());
             long totalPrice = 0;
+            boolean hasInsufficientQuantity = false;
 
             for (Cart cartItem : cartItems) {
                 Cycle cycle = cyclesRepository.findById(cartItem.getCycleId()).orElse(null);
@@ -163,27 +172,34 @@ public class CyclesController {
 
                         totalPrice += (orderedQuantity * cycle.getPrice());
                     } else {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body("Insufficient quantity for cycle with ID: " + cycle.getId());
+                        hasInsufficientQuantity = true;
+                        break;
                     }
                 }
             }
 
-            Order order = new Order();
-            order.setUser(user);
-            order.setTotalPrice(totalPrice);
-            orderRepository.save(order);
+            if (hasInsufficientQuantity) {
+                ResponseDto responseDto = new ResponseDto();
+                responseDto.setResponseMessage("Insufficient quantity for some items in the cart.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto);
+            } else {
+                Order order = new Order();
+                order.setUser(user);
+                order.setTotalPrice(totalPrice);
+                orderRepository.save(order);
 
-            return ResponseEntity.status(HttpStatus.OK).body(null);
+                ResponseDto responseDto = new ResponseDto();
+                responseDto.setResponseMessage("Order confirmed successfully.");
+                return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+            }
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            ResponseDto responseDto = new ResponseDto();
+            responseDto.setResponseMessage("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDto);
         }
     }
 
-    @PostMapping("/updateCartItemQuantity")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public ResponseEntity<?> updateCartItemQuantity(@RequestBody CartUpdateRequest request) {
+    public ResponseEntity<ResponseDto> updateCartItemQuantity(@RequestBody CartUpdateRequest request) {
         long cycleId = request.getCycleId();
         int newQuantity = request.getNewQuantity();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -194,16 +210,20 @@ public class CyclesController {
             Cart cartItem = cartItemOptional.get();
             cartItem.setQuantity(newQuantity);
             cartRepository.save(cartItem);
-            return ResponseEntity.status(HttpStatus.OK).body(null);
+            ResponseDto responseDto = new ResponseDto();
+            responseDto.setResponseMessage("Cart item quantity updated");
+            return ResponseEntity.status(HttpStatus.OK).body(responseDto);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cart item not found");
+            ResponseDto responseDto = new ResponseDto();
+            responseDto.setResponseMessage("Cart item not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDto);
         }
     }
 
     @PostMapping("/removeFromCart")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<?> removeFromCart(@RequestBody Long cycleid) {
+    public ResponseEntity<ResponseDto> removeFromCart(@RequestBody Long cycleid) {
         long cycleId = cycleid;
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -215,12 +235,18 @@ public class CyclesController {
 
             if (cartItemOptional.isPresent()) {
                 cartRepository.delete(cartItemOptional.get());
-                return ResponseEntity.status(HttpStatus.OK).body(null);
+                ResponseDto responseDto = new ResponseDto();
+                responseDto.setResponseMessage("Item removed from the cart");
+                return ResponseEntity.status(HttpStatus.OK).body(responseDto);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cart item not found");
+                ResponseDto responseDto = new ResponseDto();
+                responseDto.setResponseMessage("Cart item not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDto);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+            ResponseDto responseDto = new ResponseDto();
+            responseDto.setResponseMessage("User not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDto);
         }
     }
 
