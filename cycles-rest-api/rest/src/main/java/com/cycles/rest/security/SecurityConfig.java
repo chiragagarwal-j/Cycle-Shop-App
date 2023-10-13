@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -45,7 +46,8 @@ public class SecurityConfig {
 
     @Autowired
     private void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
+        auth.userDetailsService(userDetailsService)
+                .passwordEncoder(PasswordEncoderFactories.createDelegatingPasswordEncoder());
     }
 
     @Bean
@@ -66,7 +68,9 @@ public class SecurityConfig {
                             return corsConfiguration;
                         }))
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/api/auth/signup", "/api/auth/token", "/api/cycles/list")
+                        .requestMatchers("/api/auth/signup", "/api/auth/token", "/api/cycles/list",
+                                "/api/cycles/addToCart", "/api/cycles/cart", "/api/cycles/updateCartItemQuantity",
+                                "/api/cycles/removeFromCart", "api/cycles/confirmedOrder")
                         .permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(

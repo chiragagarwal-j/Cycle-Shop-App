@@ -54,22 +54,6 @@ public class CyclesController {
         return cyclesRepository.findAll();
     }
 
-    @PostMapping("/{id}/return")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    Cycle returnCycle(@PathVariable("id") Long id) {
-        Optional<Cycle> cycle = cyclesRepository.findById(id);
-        if (cycle.isPresent()) {
-            Cycle c = cycle.get();
-            if (c.getNumBorrowed() > 0) {
-                c.setNumBorrowed(c.getNumBorrowed() - 1);
-            }
-            return cyclesRepository.save(c);
-        } else {
-            return null;
-        }
-    }
-
     @PostMapping("/{id}/restock")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
@@ -227,7 +211,7 @@ public class CyclesController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByName(authentication.getName()).orElse(null);
-                ResponseDto responseDto = new ResponseDto();
+        ResponseDto responseDto = new ResponseDto();
 
         if (user != null) {
             Optional<Cart> cartItemOptional = cartRepository.findByUserIDAndCycleIdAndOrdered(user.getId(), cycleId,
@@ -245,12 +229,6 @@ public class CyclesController {
             responseDto.setResponseMessage("User not authenticated");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDto);
         }
-    }
-
-    @GetMapping("/getBill")
-    public ResponseEntity<List<Cart>> getBill() {
-        List<Cart> orderedCartItems = cartRepository.findByOrdered(true);
-        return ResponseEntity.status(HttpStatus.OK).body(orderedCartItems);
     }
 
 }
